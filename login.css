@@ -1,0 +1,97 @@
+*{
+    padding: 0;
+    margin: 0;
+    font-family: "Roboto";
+}
+body{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.255);
+}
+#login{
+    height: 500px;
+    width: 350px;
+   
+    display: flex;
+    flex-direction: column;
+    
+    align-items: center;
+    border-radius: 10px;
+    position: fixed;
+}
+#login::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.24); /* Transparent white */
+    z-index: -1; 
+    border-radius: 10px;
+}
+form{
+    display: flex;
+    flex-direction: column;
+   
+    height: 80%;
+    width: 100%;
+}
+#login img{
+    height: 50px;
+    margin-top: 30px;
+}
+h2{
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 20px;
+}
+
+label{
+    margin-left: 30px;
+    margin-top: 20px;
+}
+input{
+    height: 40px;
+    width: 70%;
+    margin-left: 10%;
+    padding: 2px 5%;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+}
+input:focus{
+    outline: none;
+}
+input:hover{
+    background-color: rgba(255, 255, 255, 0.4);
+    border: 1px solid white;
+}
+button{
+    height: 40px;
+    width: 90px;
+    display: block;
+    margin: 25px auto;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+}
+Button:hover{
+    background-color: rgba(255, 255, 255, 0.356);
+    border: 1px solid white;
+}
+
+svg{
+    width: 100%;
+
+    position: absolute;
+    bottom: 0px;
+    z-index: -2;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
