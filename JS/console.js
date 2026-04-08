@@ -45,7 +45,7 @@ function easy_word(){
     let btn=document.createElement("button");
     btn.setAttribute("id","hints");
     main_container.append(btn);
-    btn.innerHTML=`<img src="icon1.png" alt="image"><p>Hints</p>`;
+    btn.innerHTML=`<img src="ICONS/icon1.png" alt="image"><p>Hints</p>`;
     hint_call(random_word.toLowerCase(),btn);
     main_function(random_word.toLowerCase());
 }
@@ -60,7 +60,7 @@ async function random_word_call(){
         let btn=document.createElement("button");
         btn.setAttribute("id","hints");
         main_container.append(btn);
-        btn.innerHTML=`<img src="icon1.png" alt="image"><p>Hints</p>`;
+        btn.innerHTML=`<img src="ICONS/icon1.png" alt="image"><p>Hints</p>`;
         hint_call(data[0].toLowerCase(),btn);
  
        main_function(data[0].toLowerCase());
@@ -209,7 +209,7 @@ function alph_checker(word){
 
 function load_win(){ 
 
-    main_container.innerHTML=` <img src="icon2.png" alt="winning image" id="winning_img">
+    main_container.innerHTML=` <img src="ICONS/icon2.png" alt="winning image" id="winning_img">
                     <p id="winning_motivation">"Every word you guess sharpens your mind and brings you closer to victory! Stay curious, think smart, and let your vocabulary shine. Keep guessing, keep learning, and let every correct word be a step toward mastery!" </p>
          <button id="next_button">Next</button>`
          let next_button=document.querySelector("#next_button");
@@ -222,7 +222,7 @@ function load_win(){
 
 function load_loss(word){
     
-    main_container.innerHTML=` <img src="icon3.png" alt="lossing image" id="lossing_img">
+    main_container.innerHTML=` <img src="ICONS/icon3.png" alt="lossing image" id="lossing_img">
                     <p id="lossing_motivation">"Every wrong guess is a step toward the right one! Keep playing, keep learning, and soon, the words will fall into place. The real victory is in never giving up!" </p>
                     <div  id="answer"><p>${word}</P></div>
                     <button id="next_button">Next</button>`
