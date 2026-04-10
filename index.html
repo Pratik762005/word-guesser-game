@@ -2,60 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Word Guessor Game</title>
     <link rel="stylesheet" href="CSS/style.css">
     <link rel="icon" type="image/png" href="ICONS/main_icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Londrina+Shadow&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Orbitron:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-
-
 <body>
-  <nav id="nav">
-    <h1><i class="fa-solid fa-magnifying-glass"></i>Word Guessor Game</h1>
-    <div id="right_side">
-        <select name="levels" id="levels" required autocomplete="off">
-            <option value="level">levels</option>
-                <option value="Easy">Easy Words</option>
-                <option value="Hard">Hard Words</option>
-        </select>
-        <div>
-            <a href="https://www.linkedin.com/in/pratik-deshmukh-702b2a313" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-            <a href="https://github.com/Pratik762005" target="_blank"><i class="fa-brands fa-github"></i></a>
-            <a href="https://x.com/pratik12456"><i class="fa-brands fa-x-twitter"></i></a>
-        </div>
-    </div>
-  </nav>
-  <div id="main_div">
-                <div id="main_container">
-                    <h3>Description:-</h3>
-                        <p id="description">
-                            Guess the hidden word letter by <br>
-                            letter before you run out of <br>
-                            attempts! Get hints,avoid mistakes, <br>
-                            and challenge your vocabulary. <br>
-                            Can you guessit right in time?<br>
-                        </p>
-                    <h3>Instructions:-</h3>
-                        <ol>
-                            <li>Hints will provided</li>
-                            <li>Hints will contain definition,antonyms <br> or synonyms</li>
-                            <li>Seven chances will be their </li>
-                            <li>Total number of common alpahbets <br> will be revealed</li>
-                            <li>And total number of alphabets at <br> correct position also be revealed</li>
-                            <li>press enter when you type the word</li>
-                            <li> type in:  abc===✅ ABC===❌</li>
-                            <li>click enter for next guess</li>
-                        </ol>
-                   <button id="button">start</button>
+    <main id="main_div" class="main">
+        <div class="main__stack">
+            <div id="main_container" class="game-card">
+                <div class="game-card__top">
+                    <h1 class="game-card__title">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <span>Word Guessor Game</span>
+                    </h1>
+                    <div class="game-card__level">
+                        <div class="level-select-group">
+                            <label for="levels" class="level-select__label">Difficulty</label>
+                            <div class="level-select">
+                                <select name="levels" id="levels" class="level-select__input" required autocomplete="off">
+                                    <option value="level">Select mode</option>
+                                    <option value="Easy">Easy — common words</option>
+                                    <option value="Hard">Hard — random nouns</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-  </div>
-<footer id="footer">
-    <p>Copyright &copy; 2025|Developed By:-<span>PRATIK DESHMUKH</span></p>
-</footer>
+                <div id="game_content" class="game-card__content">
+                    <header class="game-card__intro">
+                        <h2 class="game-card__tagline">How it works</h2>
+                        <h3>Description</h3>
+                        <p id="description">
+                            Guess the hidden word letter by letter before you run out of attempts. Use hints, avoid mistakes, and challenge your vocabulary. Can you guess it in time?
+                        </p>
+                        <h3>Instructions</h3>
+                        <ol class="instructions-list">
+                            <li>Hints are provided when you tap Hints.</li>
+                            <li>Hints may include definition, antonyms, or synonyms.</li>
+                            <li>You have seven guesses.</li>
+                            <li>Each guess shows how many letters match the word (any position).</li>
+                            <li>It also shows how many letters are in the correct position.</li>
+                            <li>Press Enter when you finish typing a word.</li>
+                            <li>Lowercase counts; uppercase does not match.</li>
+                            <li>Press Enter again to lock in your guess and see the next row.</li>
+                        </ol>
+                        <button type="button" id="button" class="btn btn--primary">Start</button>
+                    </header>
+                </div>
+            </div>
+
+            <div id="secondary_container" class="game-card game-card--secondary" aria-label="Site information">
+                <p class="secondary-container__credit">Copyright &copy; 2026 · Developed by <span>Pratik Deshmukh</span></p>
+                <div class="secondary-container__social" aria-label="Social links">
+                    <a href="https://www.linkedin.com/in/pratik-deshmukh-702b2a313" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                        <i class="fa-brands fa-linkedin" aria-hidden="true"></i>
+                    </a>
+                    <a href="https://github.com/Pratik762005" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                        <i class="fa-brands fa-github" aria-hidden="true"></i>
+                    </a>
+                    <a href="https://x.com/pratik12456" target="_blank" rel="noopener noreferrer" aria-label="X">
+                        <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <script type="module" src="JS/console.js"></script>
 </body>

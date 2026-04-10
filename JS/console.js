@@ -1,28 +1,17 @@
 import { dailyLifeWords } from './word_store.js';
 
 
-let start=document.querySelector("#button");
-let h3=document.querySelectorAll("h3");
-let p=document.querySelector("p");
-let ol=document.querySelector("ol");
-let levels=document.querySelector("#levels");
-let main_container=document.querySelector("#main_container");
+let game_content = document.querySelector("#game_content");
+let start = document.querySelector("#button");
+let levels = document.querySelector("#levels");
 
-
-start.addEventListener('click',()=>{
-
-    if(levels.value==="Easy"||levels.value==="Hard"){
-
-        h3[0].remove();
-        h3[1].remove();
-        p.remove();
-        ol.remove();
-        start.remove();
-                 start_game();   
-
+start.addEventListener("click", () => {
+    if (levels.value === "Easy" || levels.value === "Hard") {
+        const intro = game_content.querySelector(".game-card__intro");
+        if (intro) intro.remove();
+        start_game();
     }
-    
-})
+});
 
 function start_game(){
             if(levels.value==="Easy"){
@@ -41,10 +30,11 @@ function easy_word(){
     let num=Math.floor(Math.random()*26);
    let random_number=String.fromCharCode(97 + num);
     let random_word=dailyLifeWords[random_number][Math.floor(Math.random()*30)];
+    console.log(random_word);
 
     let btn=document.createElement("button");
     btn.setAttribute("id","hints");
-    main_container.append(btn);
+    game_content.append(btn);
     btn.innerHTML=`<img src="ICONS/icon1.png" alt="image"><p>Hints</p>`;
     hint_call(random_word.toLowerCase(),btn);
     main_function(random_word.toLowerCase());
@@ -59,7 +49,7 @@ async function random_word_call(){
         let data=await promise_data.json();
         let btn=document.createElement("button");
         btn.setAttribute("id","hints");
-        main_container.append(btn);
+        game_content.append(btn);
         btn.innerHTML=`<img src="ICONS/icon1.png" alt="image"><p>Hints</p>`;
         hint_call(data[0].toLowerCase(),btn);
  
@@ -104,40 +94,158 @@ function main_function(main_word) {
 
 
 
-async function hint_call(word,btn){
-    try{
-        let promise_data=await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+function escapeHintHtml(str) {
+    if (str == null || str === "") return "";
+    const el = document.createElement("div");
+    el.textContent = String(str);
+    return el.innerHTML;
+}
 
-        let data=await promise_data.json();
+function getPrimaryDefinition(entry) {
+    const meanings = entry?.meanings;
+    if (!Array.isArray(meanings)) return null;
+    for (const m of meanings) {
+        const defs = m.definitions;
+        if (!Array.isArray(defs)) continue;
+        for (const d of defs) {
+            const text = d?.definition;
+            if (text && String(text).trim()) return String(text).trim();
+        }
+    }
+    return null;
+}
 
-        let counter6=0;
-
-    btn.addEventListener('click',()=>{
-                if(counter6==0){
-                        let definition=document.createElement("div");
-                        let antonyms=document.createElement("div");
-                        definition.setAttribute('id',"definition");
-                        definition.innerHTML=`<span> Definition:-</span> ${data[0].meanings[0].definitions[0].definition}`
-                        antonyms.setAttribute('id',"antonyms");
-                        antonyms.innerHTML=`<span> Antonyms:-</span>${data[0].meanings[0].definitions[0].antonyms}`;
-                        btn.after(definition);
-                        definition.after(antonyms);
+/** Collects synonyms or antonyms from meaning-level and definition-level arrays (dictionaryapi.dev). */
+function collectFromEntry(entry, field) {
+    const out = [];
+    const meanings = entry?.meanings;
+    if (!Array.isArray(meanings)) return out;
+    for (const m of meanings) {
+        if (Array.isArray(m[field])) {
+            for (const t of m[field]) {
+                if (t) out.push(String(t).trim());
+            }
+        }
+        const defs = m.definitions;
+        if (!Array.isArray(defs)) continue;
+        for (const d of defs) {
+            if (Array.isArray(d[field])) {
+                for (const t of d[field]) {
+                    if (t) out.push(String(t).trim());
                 }
+            }
+        }
+    }
+    return [...new Set(out.filter(Boolean))];
+}
+
+async function hint_call(word, btn) {
+    try {
+        const res = await fetch(
+            `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`
+        );
+        if (!res.ok) {
+            console.log("dictionary API error", res.status, word);
+            return;
+        }
+        const data = await res.json();
+        if (!Array.isArray(data) || !data[0]) {
+            console.log("no dictionary entry", word);
+            return;
+        }
+        const entry = data[0];
+        const defText = getPrimaryDefinition(entry);
+        const synonyms = collectFromEntry(entry, "synonyms");
+        const antonyms = collectFromEntry(entry, "antonyms");
+
+        let counter6 = 0;
+        btn.addEventListener("click", () => {
+            if (counter6 !== 0) return;
             counter6++;
 
-    })
+            const blocks = [];
+
+            if (defText) {
+                const definition = document.createElement("div");
+                definition.id = "definition";
+                definition.innerHTML = `<span>Definition</span> ${escapeHintHtml(defText)}`;
+                blocks.push(definition);
+            }
+
+            if (synonyms.length) {
+                const synEl = document.createElement("div");
+                synEl.id = "synonyms";
+                synEl.innerHTML = `<span>Synonyms</span> ${synonyms.map(escapeHintHtml).join(", ")}`;
+                blocks.push(synEl);
+            }
+
+            if (antonyms.length) {
+                const antEl = document.createElement("div");
+                antEl.id = "antonyms";
+                antEl.innerHTML = `<span>Antonyms</span> ${antonyms.map(escapeHintHtml).join(", ")}`;
+                blocks.push(antEl);
+            }
+
+            if (!blocks.length) {
+                const fallback = document.createElement("div");
+                fallback.id = "definition";
+                fallback.innerHTML =
+                    "<span>Hints</span> No definition, synonyms, or antonyms were found for this word.";
+                blocks.push(fallback);
+            }
+
+            let anchor = btn;
+            for (const el of blocks) {
+                anchor.after(el);
+                anchor = el;
+            }
+        });
+    } catch (error) {
+        console.log("word meaning not found", error);
     }
-   catch(error){
-        console.log("word meaning not found",error)
-   }
 }
 
 
 
 
+function wireLetterRow(option_container) {
+    const inputs = [...option_container.querySelectorAll(".option")];
+    inputs.forEach((input, i) => {
+        input.autocomplete = "off";
+        input.spellcheck = false;
+        input.addEventListener("input", () => {
+            let v = input.value;
+            if (v.length > 1) {
+                v = v.slice(-1);
+                input.value = v;
+            }
+            if (v.length === 1 && i < inputs.length - 1) {
+                inputs[i + 1].focus();
+            }
+        });
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Backspace" && input.value === "" && i > 0) {
+                e.preventDefault();
+                const prev = inputs[i - 1];
+                prev.focus();
+                prev.value = "";
+            }
+            if (e.key === "ArrowLeft" && i > 0) {
+                e.preventDefault();
+                inputs[i - 1].focus();
+            }
+            if (e.key === "ArrowRight" && i < inputs.length - 1) {
+                e.preventDefault();
+                inputs[i + 1].focus();
+            }
+        });
+    });
+    inputs[0]?.focus();
+}
+
 function add_main_div(word){
     let option_container=document.createElement("div");
-    main_container.append(option_container);
+    game_content.append(option_container);
     option_container.classList.add("option_container");
     
     for(let i=0;i<(word.length);i++){
@@ -147,6 +255,7 @@ function add_main_div(word){
       option.classList.add("option");
       option_container.append(option);
     }
+    wireLetterRow(option_container);
 }
 
 function feeling_checker(counter){
@@ -209,7 +318,7 @@ function alph_checker(word){
 
 function load_win(){ 
 
-    main_container.innerHTML=` <img src="ICONS/icon2.png" alt="winning image" id="winning_img">
+    game_content.innerHTML=` <img src="ICONS/icon2.png" alt="winning image" id="winning_img">
                     <p id="winning_motivation">"Every word you guess sharpens your mind and brings you closer to victory! Stay curious, think smart, and let your vocabulary shine. Keep guessing, keep learning, and let every correct word be a step toward mastery!" </p>
          <button id="next_button">Next</button>`
          let next_button=document.querySelector("#next_button");
@@ -222,9 +331,9 @@ function load_win(){
 
 function load_loss(word){
     
-    main_container.innerHTML=` <img src="ICONS/icon3.png" alt="lossing image" id="lossing_img">
+    game_content.innerHTML=` <img src="ICONS/icon3.png" alt="lossing image" id="lossing_img">
                     <p id="lossing_motivation">"Every wrong guess is a step toward the right one! Keep playing, keep learning, and soon, the words will fall into place. The real victory is in never giving up!" </p>
-                    <div  id="answer"><p>${word}</P></div>
+                    <div id="answer"><p>${word}</p></div>
                     <button id="next_button">Next</button>`
                     let next_button=document.querySelector("#next_button");
                     next_button.addEventListener("click",()=>{
@@ -236,11 +345,10 @@ function load_loss(word){
 }
 
 function remove_win_loss_page(button){
-let image=document.querySelector("img");
-let ptag=document.querySelector("p");
-image.remove();
-ptag.remove();
-button.remove();
-
+    let image=game_content.querySelector("img");
+    let ptag=game_content.querySelector("p");
+    if (image) image.remove();
+    if (ptag) ptag.remove();
+    button.remove();
 }
 
