@@ -30,7 +30,6 @@ function easy_word(){
     let num=Math.floor(Math.random()*26);
    let random_number=String.fromCharCode(97 + num);
     let random_word=dailyLifeWords[random_number][Math.floor(Math.random()*30)];
-    console.log(random_word);
 
     let btn=document.createElement("button");
     btn.setAttribute("id","hints");
@@ -42,23 +41,60 @@ function easy_word(){
 
 
 
-async function random_word_call(){
-    try{
-        let url="https://random-word-form.herokuapp.com/random/noun"
-        let promise_data=await fetch(url);
-        let data=await promise_data.json();
-        let btn=document.createElement("button");
-        btn.setAttribute("id","hints");
-        game_content.append(btn);
-        btn.innerHTML=`<img src="ICONS/icon1.png" alt="image"><p>Hints</p>`;
-        hint_call(data[0].toLowerCase(),btn);
- 
-       main_function(data[0].toLowerCase());
+function getFallbackWord() {
+    const letters = Object.keys(dailyLifeWords);
+    const randomLetter = letters[Math.floor(Math.random() * letters.length)];
+    const words = dailyLifeWords[randomLetter];
+    return words[Math.floor(Math.random() * words.length)].toLowerCase();
+}
 
+async function isValidDictionaryWord(word) {
+    try {
+        const res = await fetch(
+            `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`
+        );
+        if (!res.ok) {
+            return false;
+        }
+        const data = await res.json();
+        return Array.isArray(data) && data[0];
+    } catch {
+        return false;
     }
-    catch(error){
-        console.log("api failed to load data",error);
+}
+
+async function random_word_call(){
+    const url = "https://random-word-api.herokuapp.com/word?number=1";
+    let word = null;
+
+    try {
+        for (let attempt = 0; attempt < 3; attempt++) {
+            const response = await fetch(url);
+            if (!response.ok) {
+                continue;
+            }
+            const data = await response.json();
+            const candidate = Array.isArray(data) && data[0] ? data[0].toLowerCase() : null;
+            if (candidate && await isValidDictionaryWord(candidate)) {
+                word = candidate;
+                break;
+            }
+        }
+    } catch (error) {
+        console.log("random word API request failed", error);
     }
+
+    if (!word) {
+        console.log("using fallback local word because no valid dictionary word was found");
+        word = getFallbackWord();
+    }
+
+    const btn = document.createElement("button");
+    btn.setAttribute("id","hints");
+    game_content.append(btn);
+    btn.innerHTML=`<img src="ICONS/icon1.png" alt="image"><p>Hints</p>`;
+    hint_call(word, btn);
+    main_function(word);
 }
 
 let keydownHandler; 
